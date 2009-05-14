@@ -70,13 +70,19 @@ class MQ
       @mq = mq
       @opts = opts
       @bindings ||= {}
-      @mq.queues[@name = name] ||= self
-      unless opts[:no_declare]
-        @mq.callback {
-          @mq.send Protocol::Queue::Declare.new({ :queue => name,
-                                                  :nowait => true }.merge(opts))
-        } 
+      # TODO: do this in a non-ugly way
+      if name.nil? 
+        if !@mq.queues[@name = name].nil?
+          raise "can't have two pending server-generated queues at once" 
+        elsif opts[:nowait]
+          raise "must specify :nowait => false for server-generated queues" 
+        end
       end
+      @mq.queues[@name = name] ||= self
+      @mq.callback {
+        @mq.send Protocol::Queue::Declare.new({ :queue => name,
+                                                :nowait => true }.merge(opts))
+      } unless opts[:no_declare]
     end
     attr_reader :name
 
@@ -399,6 +405,7 @@ class MQ
     end
 
     def recieve_status declare_ok
+      @name = declare_ok.queue if @name.nil?
       if @on_status
         m, c = declare_ok.message_count, declare_ok.consumer_count
         @on_status.call *(@on_status.arity == 1 ? [m] : [m, c])

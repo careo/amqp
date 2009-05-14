@@ -199,7 +199,11 @@ class MQ
         end
 
       when Protocol::Queue::DeclareOk
-        queues[ method.queue ].recieve_status method
+        # TODO: do this some non-ugly way
+        if queues[ method.queue ].nil? and !queues[ nil ].nil?
+          queues[ method.queue ] = queues.delete(nil)
+        end
+        queues[ method.queue ].recieve_status method  
 
       when Protocol::Basic::Deliver, Protocol::Basic::GetOk
         @method = method
