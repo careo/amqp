@@ -25,7 +25,8 @@ class MQ
     # Defines, intializes and returns an Exchange to act as an ingress
     # point for all published messages.
     #
-    # There are three (3) supported Exchange types: direct, fanout and topic.
+    # There are four (4) supported Exchange types: direct, fanout, topic,
+    # and headers.
     #
     # As part of the standard, the server _must_ predeclare the direct exchange
     # 'amq.direct' and the fanout exchange 'amq.fanout' (all exchange names 
@@ -144,6 +145,36 @@ class MQ
     # matches against 0 or more dot-separated items. If none of these 
     # symbols are used, the exchange performs a comparison looking for an 
     # exact match.
+    #
+    # == Headers
+    # A headers exchange allows for messages to be published to an exchange 
+    # that will be routed to queues based based its headers.
+    #
+    # Any published message, regardless of its persistence setting, is thrown
+    # away by the exchange when there are no queues bound to it.
+    #
+    # As part of the AMQP standard, each server _should_ predeclare a headers 
+    # exchange called 'amq.match' (this is not required by the standard).
+    # Allocating this exchange without a name _or_ with the empty string
+    # will use the internal 'amq.match' exchange.
+    #
+    # TODO: The classic example is ... 
+    #
+    # When publishing data to the exchange, bound queues subscribing to the
+    # exchange indicate which data interests them by passing arguments
+    # for matching against the headers in published messages. The
+    # form of the matching can be controlled by the 'x-match' argument, which
+    # may be 'any' or 'all'. If unspecified (in RabbitMQ at least), it defaults
+    # to "all".
+    #
+    # A value of 'all' for 'x-match' implies that all values must match (i.e. 
+    # it does an AND of the headers ), while a value of 'any' implies that 
+    # at least one should match (ie. it does an OR).
+    #
+    # TODO: document behavior when either the binding or the message is missing
+    #       a header present in the other
+    #
+    # TODO: insert example
     #
     # == Options
     # * :passive => true | false (default false)

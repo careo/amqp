@@ -526,6 +526,7 @@ class MQ
   #
   # == Headers
   # A headers exchange allows for messages to be published to an exchange 
+  # that will be routed to queues based based its headers.
   #
   # Any published message, regardless of its persistence setting, is thrown
   # away by the exchange when there are no queues bound to it.
