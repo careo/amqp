@@ -7,7 +7,8 @@ class MQ
   # It determines the next delivery hop by examining the bindings associated
   # with the exchange.
   #
-  # There are three (3) supported Exchange types: direct, fanout and topic.
+  # There are four (4) supported Exchange types: direct, fanout, topic,
+  # and headers.
   #
   # As part of the standard, the server _must_ predeclare the direct exchange
   # 'amq.direct' and the fanout exchange 'amq.fanout' (all exchange names 
