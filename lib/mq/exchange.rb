@@ -215,6 +215,11 @@ class MQ
     # not wait for a reply method.  If the server could not complete the
     # method it will raise a channel or connection exception.
     #
+    # * :no_declare => true | false (default false)
+    # If set, the client will not declare the exchange prior to use. Only
+    # useful in the case where the client has permissions to use, but not
+    # declare, the exchange. (e.g. using permissions in RabbitMQ).
+    #
     # == Exceptions
     # Doing any of these activities are illegal and will raise MQ:Error.
     # * redeclare an already-declared exchange to a different type
@@ -230,7 +235,7 @@ class MQ
         @mq.send Protocol::Exchange::Declare.new({ :exchange => name,
                                                    :type => type,
                                                    :nowait => true }.merge(opts))
-      } unless name == "amq.#{type}" or name == ''
+      } unless name == "amq.#{type}" or name == '' or opts[:no_declare]
     end
     attr_reader :name, :type, :key
 
