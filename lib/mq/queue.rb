@@ -61,15 +61,22 @@ class MQ
     # not wait for a reply method.  If the server could not complete the
     # method it will raise a channel or connection exception.
     #
+    # * :no_declare => true | false (default false)
+    # If set, the client will not declare the queue prior to use. Only
+    # useful in the case where the client does not have permission to
+    # declare a queue (e.g. using permissions in RabbitMQ).
+    #
     def initialize mq, name, opts = {}
       @mq = mq
       @opts = opts
       @bindings ||= {}
       @mq.queues[@name = name] ||= self
-      @mq.callback{
-        @mq.send Protocol::Queue::Declare.new({ :queue => name,
-                                                :nowait => true }.merge(opts))
-      }
+      unless opts[:no_declare]
+        @mq.callback {
+          @mq.send Protocol::Queue::Declare.new({ :queue => name,
+                                                  :nowait => true }.merge(opts))
+        } 
+      end
     end
     attr_reader :name
 
